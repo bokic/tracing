@@ -1,5 +1,7 @@
 # Perfetto Automatic Function Tracing
 
+![Perfetto UI Screenshot](img/perfetto-ui.png)
+
 This project demonstrates how to implement **automatic function-level tracing** in a C/C++ application using the [Perfetto SDK](https://perfetto.dev/) and the GCC/Clang `-finstrument-functions` compiler feature.
 
 ## Features
