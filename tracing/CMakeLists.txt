@@ -35,12 +35,18 @@ target_link_libraries(perfetto PRIVATE Threads::Threads ${CMAKE_DL_LIBS})
 
 # Set default symbol visibility to hidden, and enable -fPIC so the static
 # archive can be linked into libcfrds.so without relocation errors.
+# -g0: no debug info (overrides global CMAKE_*_FLAGS_DEBUG) — keeps .so lean.
+# -O2: needed for LTO to do meaningful dead-code elimination (overrides -O0).
+# INTERPROCEDURAL_OPTIMIZATION: emit LTO bitcode so unused perfetto code is
+# stripped when libcfrds.so is linked.
 set_target_properties(perfetto PROPERTIES
     C_VISIBILITY_PRESET hidden
     CXX_VISIBILITY_PRESET hidden
     VISIBILITY_INLINES_HIDDEN ON
     POSITION_INDEPENDENT_CODE ON
+    INTERPROCEDURAL_OPTIMIZATION ON
 )
+target_compile_options(perfetto PRIVATE "-g0" "-O2")
 
 # Internal library for tracing hooks (now mixed C and C++)
 add_library(tracing STATIC 
@@ -52,12 +58,15 @@ target_compile_definitions(tracing PUBLIC ENABLE_PERFETTO)
 
 # Set default symbol visibility to hidden, and enable -fPIC so the static
 # archive can be linked into libcfrds.so without relocation errors.
+# -g0 / -O2: same rationale as perfetto above.
 set_target_properties(tracing PROPERTIES
     C_VISIBILITY_PRESET hidden
     CXX_VISIBILITY_PRESET hidden
     VISIBILITY_INLINES_HIDDEN ON
     POSITION_INDEPENDENT_CODE ON
+    INTERPROCEDURAL_OPTIMIZATION ON
 )
+target_compile_options(tracing PRIVATE "-g0" "-O2")
 
 # _Thread_local defaults to local-exec TLS model which is incompatible with
 # shared libraries. Force global-dynamic so libtracing.a can be linked into .so.
