@@ -17,6 +17,9 @@ void perf_backend_on_func_exit(void* this_fn, void* call_site);
 void perf_backend_trace_delay_start(const char* name);
 void perf_backend_trace_delay_end(void);
 
+void perf_backend_trace_net_start(const char* name);
+void perf_backend_trace_net_end(void);
+
 #ifdef __cplusplus
 }
 #endif

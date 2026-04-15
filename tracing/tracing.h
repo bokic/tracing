@@ -7,6 +7,8 @@
     // Automatic tracing helpers
     __attribute__((visibility("default"))) void trace_delay_start(const char* name);
     __attribute__((visibility("default"))) void trace_delay_end(void);
+    __attribute__((visibility("default"))) void trace_net_start(const char* name);
+    __attribute__((visibility("default"))) void trace_net_end(void);
  #ifdef __cplusplus
  }
  #endif

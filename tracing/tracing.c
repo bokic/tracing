@@ -28,6 +28,16 @@ void trace_delay_end(void) {
     perf_backend_trace_delay_end();
 }
 
+void trace_net_start(const char* name) {
+    if (!atomic_load(&perfetto_ready)) return;
+    perf_backend_trace_net_start(name);
+}
+
+void trace_net_end(void) {
+    if (!atomic_load(&perfetto_ready)) return;
+    perf_backend_trace_net_end();
+}
+
 // Compiler instrumentation hooks
 __attribute__((visibility("default"), no_instrument_function))
 void __cyg_profile_func_enter(void *this_fn, void *call_site) {

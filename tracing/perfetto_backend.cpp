@@ -20,7 +20,8 @@
 // Define categories used in the project
 PERFETTO_DEFINE_CATEGORIES(
     perfetto::Category("function_call").SetDescription("Automatic function tracing"),
-    perfetto::Category("delay").SetDescription("Manual delay events")
+    perfetto::Category("delay").SetDescription("Manual delay events"),
+    perfetto::Category("net").SetDescription("Network I/O events")
 );
 PERFETTO_TRACK_EVENT_STATIC_STORAGE();
 
@@ -254,6 +255,14 @@ void perf_backend_trace_delay_start(const char* name) {
 
 void perf_backend_trace_delay_end() {
     TRACE_EVENT_END("delay");
+}
+
+void perf_backend_trace_net_start(const char* name) {
+    TRACE_EVENT_BEGIN("net", perfetto::DynamicString{name});
+}
+
+void perf_backend_trace_net_end() {
+    TRACE_EVENT_END("net");
 }
 
 }
