@@ -33,11 +33,13 @@ target_include_directories(perfetto PUBLIC ${perfetto_SOURCE_DIR}/sdk)
 find_package(Threads REQUIRED)
 target_link_libraries(perfetto PRIVATE Threads::Threads ${CMAKE_DL_LIBS})
 
-# Set default symbol visibility to hidden
+# Set default symbol visibility to hidden, and enable -fPIC so the static
+# archive can be linked into libcfrds.so without relocation errors.
 set_target_properties(perfetto PROPERTIES
     C_VISIBILITY_PRESET hidden
     CXX_VISIBILITY_PRESET hidden
     VISIBILITY_INLINES_HIDDEN ON
+    POSITION_INDEPENDENT_CODE ON
 )
 
 # Internal library for tracing hooks (now mixed C and C++)
@@ -48,11 +50,20 @@ add_library(tracing STATIC
 target_link_libraries(tracing PUBLIC perfetto)
 target_compile_definitions(tracing PUBLIC ENABLE_PERFETTO)
 
-# Set default symbol visibility to hidden
+# Set default symbol visibility to hidden, and enable -fPIC so the static
+# archive can be linked into libcfrds.so without relocation errors.
 set_target_properties(tracing PROPERTIES
     C_VISIBILITY_PRESET hidden
     CXX_VISIBILITY_PRESET hidden
     VISIBILITY_INLINES_HIDDEN ON
+    POSITION_INDEPENDENT_CODE ON
+)
+
+# _Thread_local defaults to local-exec TLS model which is incompatible with
+# shared libraries. Force global-dynamic so libtracing.a can be linked into .so.
+# Also need -fPIC since the static archive gets linked into a shared library.
+target_compile_options(tracing PRIVATE
+    $<$<COMPILE_LANGUAGE:C>:-fPIC -ftls-model=global-dynamic>
 )
 
 # Allow targets linking to 'tracing' to find the header
