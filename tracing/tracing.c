@@ -17,6 +17,8 @@ static char dynamic_trace_path[512];
 // Public tracing interface implemented in C
 void trace_delay_start(const char* name) __attribute__((no_instrument_function));
 void trace_delay_end(void) __attribute__((no_instrument_function));
+void trace_net_start(const char* name) __attribute__((no_instrument_function));
+void trace_net_end(void) __attribute__((no_instrument_function));
 
 void trace_delay_start(const char* name) {
     if (!atomic_load(&perfetto_ready)) return;

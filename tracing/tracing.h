@@ -15,4 +15,6 @@
 #else
 #define trace_delay_start(name) 
 #define trace_delay_end() 
+#define trace_net_start(name)
+#define trace_net_end()
 #endif
