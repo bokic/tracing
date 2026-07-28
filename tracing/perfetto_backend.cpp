@@ -179,9 +179,9 @@ static const char* resolve_sym(void* addr)
     ScanCtx ctx;
     ctx.addr = reinterpret_cast<uintptr_t>(addr);
 
-    TRACE_EVENT_BEGIN("delay", "dl_iterate_phdr");
+    //TRACE_EVENT_BEGIN("delay", "dl_iterate_phdr");
     dl_iterate_phdr(scan_dsos_cb, &ctx);
-    TRACE_EVENT_END("delay");
+    //TRACE_EVENT_END("delay");
 
     if (!ctx.result.empty()) {
         tl_name = std::move(ctx.result);
