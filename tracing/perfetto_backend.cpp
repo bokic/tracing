@@ -201,7 +201,7 @@ void perf_backend_init() {
 
 void perf_backend_start(const char* filename) {
     perfetto::TraceConfig cfg;
-    cfg.add_buffers()->set_size_kb(1024);
+    cfg.add_buffers()->set_size_kb(2048 * 1024); // 2048 MB — enough for full function tracing
     auto* ds_cfg = cfg.add_data_sources()->mutable_config();
     ds_cfg->set_name("track_event");
 
