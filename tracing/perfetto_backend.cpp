@@ -221,8 +221,21 @@ void perf_backend_start(const char* filename) {
 
 void perf_backend_stop() {
     if (session) {
+        // First flush: commit all thread-local TraceWriter buffers into the
+        // shared-memory ring buffer before stopping.
         session->FlushBlocking();
+
+        // Stop the session. Internally this triggers another flush, but
+        // in write_into_file mode the service may still hold one last chunk
+        // in its ring buffer that hasn't been written to the fd yet.
         session->StopBlocking();
+
+        // Second flush / drain: with the in-process backend, StopBlocking()
+        // can leave the final packets in the ring buffer. ReadTrace() forces
+        // the service to write them out to the file fd. We pass a no-op
+        // callback; the call blocks until all data has been handed to the fd.
+        session->ReadTrace([](perfetto::TracingSession::ReadTraceCallbackArgs) {});
+
         delete session;
         session = nullptr;
     }
