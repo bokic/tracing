@@ -25,7 +25,7 @@ PERFETTO_DEFINE_CATEGORIES(
 );
 PERFETTO_TRACK_EVENT_STATIC_STORAGE();
 
-static std::unique_ptr<perfetto::TracingSession> session;
+static perfetto::TracingSession* session = nullptr;
 static int trace_fd = -1;
 
 // ---------------------------------------------------------------------------
@@ -209,7 +209,7 @@ void perf_backend_start(const char* filename) {
     cfg.set_file_write_period_ms(250);
     cfg.set_flush_period_ms(250);
 
-    session = perfetto::Tracing::NewTrace();
+    session = perfetto::Tracing::NewTrace().release();
     trace_fd = open(filename, O_RDWR | O_CREAT | O_TRUNC, 0600);
     if (trace_fd < 0) {
         std::cerr << "Failed to open trace file: " << filename << std::endl;
@@ -223,8 +223,8 @@ void perf_backend_stop() {
     if (session) {
         session->FlushBlocking();
         session->StopBlocking();
-        session.reset();
-        usleep(20000);
+        delete session;
+        session = nullptr;
     }
     if (trace_fd >= 0) {
         fsync(trace_fd);
